@@ -9,7 +9,7 @@ data class SearchedBookDto(
     val id: String,
     @SerialName("title")
     val title: String,
-    @SerialName("languages")
+    @SerialName("language")
     val languages: List<String>? = null,
     @SerialName("cover_i")
     val coverAlternativeKey: Int? = null,
