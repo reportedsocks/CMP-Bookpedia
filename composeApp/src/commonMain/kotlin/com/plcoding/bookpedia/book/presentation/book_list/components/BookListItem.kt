@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -102,7 +101,7 @@ fun BookListItem(
 
             Column(
                 modifier = Modifier
-                    .fillMaxHeight(),
+                    .weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -140,7 +139,9 @@ fun BookListItem(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                modifier.size(36.dp)
+                modifier
+                    .weight(0.3f)
+                    .size(36.dp)
             )
         }
     }

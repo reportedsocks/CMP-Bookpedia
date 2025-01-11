@@ -52,6 +52,7 @@ private fun BookListScreenPreview() {
         state = BookListState(
             searchQuery = "Kotlin",
             searchResults = books,
+            isLoading = false
         ),
         onAction = {}
     )
