@@ -32,6 +32,7 @@ class BookListViewModel(
             if (cachedBooks.isEmpty()) {
                 observeSearchQuery()
             }
+            observeFavouriteBooks()
         }
         .stateIn(
             viewModelScope,
@@ -41,6 +42,7 @@ class BookListViewModel(
 
     private var cachedBooks = emptyList<Book>()
     private var searchJob: Job? = null
+    private var favouritesJob: Job? = null
 
     fun onAction(action: BookListAction) {
         when(action){
@@ -58,6 +60,16 @@ class BookListViewModel(
                 }
             }
         }
+    }
+
+    private fun observeFavouriteBooks() {
+        favouritesJob?.cancel()
+        favouritesJob = bookRepository
+            .getFavouriteBooks()
+            .onEach { favouriteBooks ->
+                _state.update { it.copy(favouriteBooks = favouriteBooks) }
+            }
+            .launchIn(viewModelScope)
     }
 
     @OptIn(FlowPreview::class)

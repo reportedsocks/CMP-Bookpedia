@@ -3,6 +3,7 @@ package com.plcoding.bookpedia.book.presentation.book_detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
 import com.plcoding.bookpedia.app.Route
 import com.plcoding.bookpedia.book.domain.BookRepository
@@ -10,6 +11,9 @@ import com.plcoding.bookpedia.core.domain.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -26,6 +30,7 @@ class BookDetailViewModel(
     val state = _state
         .onStart {
             fetchBookDescription()
+            observeFavouriteStatus()
         }
         .stateIn(
             viewModelScope,
@@ -40,9 +45,28 @@ class BookDetailViewModel(
                     book = action.book
                 ) }
             }
-            is BookDetailAction.OnFavouriteClick -> {}
+            is BookDetailAction.OnFavouriteClick -> {
+                viewModelScope.launch {
+                    if (state.value.isFavourite) {
+                        bookRepository.deleteFromFavourites(bookId)
+                    } else {
+                        state.value.book?.let {
+                            bookRepository.markAsFavourite(it)
+                        }
+                    }
+                }
+            }
             else -> Unit
         }
+    }
+
+    private fun observeFavouriteStatus() {
+        bookRepository
+            .isBookFavourite(bookId)
+            .onEach { isFavourite ->
+                _state.update { it.copy(isFavourite = isFavourite) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchBookDescription() {
